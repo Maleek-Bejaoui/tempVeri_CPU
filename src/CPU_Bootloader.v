@@ -91,8 +91,7 @@ module CPU_Bootloader
   /* CPU_Bootloader.vhd:225:12  */
   assign boot_ram_enable = bl_ram_enable; // (signal)
   /* CPU_Bootloader.vhd:231:5  */
-  Control_Unit #(
-    .RAM_ADR_WIDTH(32'b00000000000000000000000000000110))
+  Control_Unit 
     uc (
     .clk(clk),
     .ce(ce),
@@ -109,7 +108,7 @@ module CPU_Bootloader
     .sel_UAL(uc_sel_UAL),
     .w_mem(uc_w_mem));
   /* CPU_Bootloader.vhd:271:5  */
-  UT ut1 (
+  UT UT (
     .data_in(ram_data_out),
     .clk(clk),
     .ce(ce),
@@ -122,9 +121,7 @@ module CPU_Bootloader
     .data_out(ut1_data_out),
     .carry(ut1_carry));
   /* CPU_Bootloader.vhd:297:5  */
-  boot_loader #(
-    .RAM_ADR_WIDTH(32'b00000000000000000000000000000110),
-    .RAM_SIZE(32'b00000000000000000000000001000000))
+  boot_loader
     bl (
     .rst(rst),
     .clk(clk),
@@ -147,9 +144,7 @@ module CPU_Bootloader
   /* CPU_Bootloader.vhd:345:31  */
   assign n20_o = boot ? boot_ram_in : ut_data_out;
   /* CPU_Bootloader.vhd:351:5  */
-  RAM_SP_64_8 #(
-    .NbBits(32'b00000000000000000000000000010000),
-    .Nbadr(32'b00000000000000000000000000000110))
+  RAM_SP_64_8 
     um (
     .add(sig_ram_adr),
     .data_in(sig_ram_in),
