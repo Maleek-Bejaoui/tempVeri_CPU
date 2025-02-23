@@ -114,7 +114,7 @@ module CPU_Bootloader
     .ce(ce),
     .rst(rst),
     .load_R1(load_r1),
-    .load_accu(load_accu),
+    .load_ACCU(load_accu),
     .load_carry(load_carry),
     .init_carry(clear_carry),
     .sel_UAL(sel_ual_ut),
