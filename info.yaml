@@ -1,6 +1,6 @@
 # Tiny Tapeout project information
 project:
-  title:        "compteur"      # Project title
+  title:        "CPU"      # Project title
   author:       "ASIC"      # Your name
   discord:      "ASICcompteur"      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
   description:  "uncompteur"      # One line description of what your project does
