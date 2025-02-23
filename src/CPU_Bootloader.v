@@ -1,113 +1,161 @@
-
-module CPU_Bootloader (
-    input  wire [7:0] ui_in,
-    output wire [7:0] uo_out,
-    input  wire [7:0] uio_in,
-    output wire [7:0] uio_out,
-    output wire [7:0] uio_oe,
-    input  wire ena,
-    input  wire clk,
-    input  wire rst_n
-);
-
-    wire [15:0] UT_data_out;
-    wire [5:0] sig_adr;
-    wire carry;
-    wire clear_carry;
-    wire enable_mem;
-    wire load_R1;
-    wire s_load_accu;
-    wire load_carry;
-    wire [2:0] sel_UAL_UT;
-    wire [2:0] sel_UAL_UC;
-    wire w_mem;
-
-    wire [15:0] ram_data_in, ram_data_out;
-    wire ram_enable;
-
-    wire sig_rw;
-    wire sig_ram_enable;
-    wire [5:0] sig_ram_adr;
-    wire [15:0] sig_ram_in;
-
-    wire boot;
-    wire [5:0] boot_ram_adr;
-    wire [15:0] boot_ram_in, boot_ram_out;
-    wire boot_ram_rw;
-    wire boot_ram_enable;
-
-    assign uio_out = 8'b00000000;
-    assign uio_oe = 8'b00000000;
-    assign uo_out[7:1] = 7'b0000000;
-    /* verilator lint_off PINCONNECTEMPTY */
-
-    Control_Unit UC (
-        .clk(clk),
-        .ce(ena),
-        .rst(~rst_n),
-        .carry(carry),
-        .boot(boot),
-        .data_in(ram_data_out),
-        .adr(sig_adr),
-        .clear_carry(clear_carry),
-        .enable_mem(enable_mem),
-        .load_R1(load_R1),
-        .load_accu(s_load_accu),
-        .load_carry(load_carry),
-        .sel_UAL(sel_UAL_UC),
-        .w_mem(w_mem)
-    );
-    /* verilator lint_on PINCONNECTEMPTY */
-
-    assign sel_UAL_UT = sel_UAL_UC;
-    /* verilator lint_off PINCONNECTEMPTY */
-
-    UT UT1 (
-        .data_in(ram_data_out),
-        .clk(clk),
-        .ce(ena),
-        .rst(~rst_n),
-        .load_R1(load_R1),
-        .load_ACCU(s_load_accu),  
-        .load_carry(load_carry),
-        .init_carry(clear_carry),
-        .sel_UAL(sel_UAL_UT),
-        .data_out(UT_data_out),
-        .carry(carry)
-    );
-    /* verilator lint_on PINCONNECTEMPTY */
-
-    /* verilator lint_off PINCONNECTEMPTY */
-    boot_loader BL (
-        .rst(~rst_n),
-        .clk(clk),
-        .ce(ena),
-        .rx(uio_in[0]),
-        .tx(uo_out[0]),
-        .boot(boot),
-        .scan_memory(ui_in[0]),
-        .ram_out(ram_data_out),
-        .ram_rw(boot_ram_rw),
-        .ram_enable(boot_ram_enable),
-        .ram_adr(boot_ram_adr),
-        .ram_in(boot_ram_in)
-       
-    );
-    /* verilator lint_on PINCONNECTEMPTY */
-
-    assign sig_rw = (boot) ? boot_ram_rw : w_mem;
-    assign sig_ram_enable = (boot) ? boot_ram_enable : enable_mem;
-    assign sig_ram_adr = (boot) ? boot_ram_adr : sig_adr;
-    assign sig_ram_in = (boot) ? boot_ram_in : UT_data_out;
-
-    RAM_SP_64_8 UM (
-        .add(sig_ram_adr),
-        .data_in(sig_ram_in),
-        .r_w(sig_rw),
-        .enable(sig_ram_enable),
-        .clk(clk),
-        .ce(ena),
-        .data_out(ram_data_out)
-    );
-
+module CPU_Bootloader
+  (input  clk,
+   input  rst,
+   input  ce,
+   input  scan_memory,
+   input  rx,
+   output tx);
+  wire [15:0] ut_data_out;
+  wire [5:0] sig_adr;
+  wire carry;
+  wire clear_carry;
+  wire enable_mem;
+  wire load_r1;
+  wire load_accu;
+  wire load_carry;
+  wire [2:0] sel_ual_ut;
+  wire [2:0] sel_ual_uc;
+  wire w_mem;
+  wire [15:0] ram_data_out;
+  wire sig_rw;
+  wire sig_ram_enable;
+  wire [5:0] sig_ram_adr;
+  wire [15:0] sig_ram_in;
+  wire boot;
+  wire [5:0] boot_ram_adr;
+  wire [15:0] boot_ram_in;
+  wire boot_ram_rw;
+  wire boot_ram_enable;
+  wire [5:0] uc_adr;
+  wire uc_clear_carry;
+  wire uc_enable_mem;
+  wire uc_load_R1;
+  wire uc_load_accu;
+  wire uc_load_carry;
+  wire [2:0] uc_sel_UAL;
+  wire uc_w_mem;
+  wire [15:0] ut1_data_out;
+  wire ut1_carry;
+  wire bl_tx;
+  wire bl_boot;
+  wire bl_ram_rw;
+  wire bl_ram_enable;
+  wire [5:0] bl_ram_adr;
+  wire [15:0] bl_ram_in;
+  wire n17_o;
+  wire n18_o;
+  wire [5:0] n19_o;
+  wire [15:0] n20_o;
+  wire [15:0] um_data_out;
+  assign tx = bl_tx;
+  /* CPU_Bootloader.vhd:175:12  */
+  assign ut_data_out = ut1_data_out; // (signal)
+  /* CPU_Bootloader.vhd:177:12  */
+  assign sig_adr = uc_adr; // (signal)
+  /* CPU_Bootloader.vhd:179:12  */
+  assign carry = ut1_carry; // (signal)
+  /* CPU_Bootloader.vhd:181:12  */
+  assign clear_carry = uc_clear_carry; // (signal)
+  /* CPU_Bootloader.vhd:183:12  */
+  assign enable_mem = uc_enable_mem; // (signal)
+  /* CPU_Bootloader.vhd:185:12  */
+  assign load_r1 = uc_load_R1; // (signal)
+  /* CPU_Bootloader.vhd:187:12  */
+  assign load_accu = uc_load_accu; // (signal)
+  /* CPU_Bootloader.vhd:189:12  */
+  assign load_carry = uc_load_carry; // (signal)
+  /* CPU_Bootloader.vhd:191:12  */
+  assign sel_ual_ut = sel_ual_uc; // (signal)
+  /* CPU_Bootloader.vhd:193:12  */
+  assign sel_ual_uc = uc_sel_UAL; // (signal)
+  /* CPU_Bootloader.vhd:195:12  */
+  assign w_mem = uc_w_mem; // (signal)
+  /* CPU_Bootloader.vhd:199:25  */
+  assign ram_data_out = um_data_out; // (signal)
+  /* CPU_Bootloader.vhd:205:12  */
+  assign sig_rw = n17_o; // (signal)
+  /* CPU_Bootloader.vhd:207:12  */
+  assign sig_ram_enable = n18_o; // (signal)
+  /* CPU_Bootloader.vhd:209:12  */
+  assign sig_ram_adr = n19_o; // (signal)
+  /* CPU_Bootloader.vhd:211:12  */
+  assign sig_ram_in = n20_o; // (signal)
+  /* CPU_Bootloader.vhd:215:12  */
+  assign boot = bl_boot; // (signal)
+  /* CPU_Bootloader.vhd:217:12  */
+  assign boot_ram_adr = bl_ram_adr; // (signal)
+  /* CPU_Bootloader.vhd:219:12  */
+  assign boot_ram_in = bl_ram_in; // (signal)
+  /* CPU_Bootloader.vhd:223:12  */
+  assign boot_ram_rw = bl_ram_rw; // (signal)
+  /* CPU_Bootloader.vhd:225:12  */
+  assign boot_ram_enable = bl_ram_enable; // (signal)
+  /* CPU_Bootloader.vhd:231:5  */
+  Control_Unit #(
+    .RAM_ADR_WIDTH(32'b00000000000000000000000000000110))
+    uc (
+    .clk(clk),
+    .ce(ce),
+    .rst(rst),
+    .carry(carry),
+    .boot(boot),
+    .data_in(ram_data_out),
+    .adr(uc_adr),
+    .clear_carry(uc_clear_carry),
+    .enable_mem(uc_enable_mem),
+    .load_R1(uc_load_R1),
+    .load_accu(uc_load_accu),
+    .load_carry(uc_load_carry),
+    .sel_UAL(uc_sel_UAL),
+    .w_mem(uc_w_mem));
+  /* CPU_Bootloader.vhd:271:5  */
+  UT ut1 (
+    .data_in(ram_data_out),
+    .clk(clk),
+    .ce(ce),
+    .rst(rst),
+    .load_R1(load_r1),
+    .load_accu(load_accu),
+    .load_carry(load_carry),
+    .init_carry(clear_carry),
+    .sel_UAL(sel_ual_ut),
+    .data_out(ut1_data_out),
+    .carry(ut1_carry));
+  /* CPU_Bootloader.vhd:297:5  */
+  boot_loader #(
+    .RAM_ADR_WIDTH(32'b00000000000000000000000000000110),
+    .RAM_SIZE(32'b00000000000000000000000001000000))
+    bl (
+    .rst(rst),
+    .clk(clk),
+    .ce(ce),
+    .rx(rx),
+    .scan_memory(scan_memory),
+    .ram_out(ram_data_out),
+    .tx(bl_tx),
+    .boot(bl_boot),
+    .ram_rw(bl_ram_rw),
+    .ram_enable(bl_ram_enable),
+    .ram_adr(bl_ram_adr),
+    .ram_in(bl_ram_in));
+  /* CPU_Bootloader.vhd:333:27  */
+  assign n17_o = boot ? boot_ram_rw : w_mem;
+  /* CPU_Bootloader.vhd:337:39  */
+  assign n18_o = boot ? boot_ram_enable : enable_mem;
+  /* CPU_Bootloader.vhd:341:33  */
+  assign n19_o = boot ? boot_ram_adr : sig_adr;
+  /* CPU_Bootloader.vhd:345:31  */
+  assign n20_o = boot ? boot_ram_in : ut_data_out;
+  /* CPU_Bootloader.vhd:351:5  */
+  RAM_SP_64_8 #(
+    .NbBits(32'b00000000000000000000000000010000),
+    .Nbadr(32'b00000000000000000000000000000110))
+    um (
+    .add(sig_ram_adr),
+    .data_in(sig_ram_in),
+    .r_w(sig_rw),
+    .enable(sig_ram_enable),
+    .clk(clk),
+    .ce(ce),
+    .data_out(um_data_out));
 endmodule
