@@ -23,12 +23,17 @@ module tt_um_top (
 
   // List all unused inputs to prevent warnings
 //  wire _unused = &{ena, clk, rst_n, 1'b0};
-  wire _unused = &{ena, 1'b0};
+//  wire _unused = &{ena, 1'b0};
 
-  counter m_counter (
-    .clk  (clk),    // Clock input
-    .rst  (!rst_n), // Reset input
-    .cmpt (uo_out)  // 8-bit counter output
-  );
+
+
+ CPU_Bootloader m_cpu
+    (.clk(clk),
+     .rst(!rst_n),
+     .ce(ena),
+     .scan_memory(ui_in[0]),
+     .rx(uio_in[0]),
+     .tx(uio_oe[0])
+    );
 
 endmodule
