@@ -32,8 +32,8 @@ module tt_um_top (
      .rst(!rst_n),
      .ce(ena),
      .scan_memory(ui_in[0]),
-     .rx(uio_in[0]),
-     .tx(uio_oe[0])
+     .rx(ui_in[1]),
+     .tx(uo_out[0])
     );
 
 endmodule
